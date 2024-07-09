@@ -22,15 +22,59 @@ const stages =[
 
 function App() {
 
-  const [gameStage, setGameState] = useState(stages[0].name);
-  const [words] = useState(wordsList)
+  const [gameStage, setGameStage] = useState(stages[0].name);
+  const [words] = useState(wordsList);
+  const [pickedWord,setPickedWord] = useState("");
+  const [pickedCategory,setPickedtCategory] = useState("");
+  const [letters,setLetters] = useState([]);
 
-  console.log(words)
+  const pickWordAndCategory = () => {
+    // Escolher categoria aleatoriamente
+    const categories = Object.keys(words);
+    const category = categories[Math.floor(Math.random() * Object.keys(categories).length)];
+   
+    // Escolher palavra aleatoria
+    const word = words[category][Math.floor(Math.random() * words[category].length)];
+
+   return {word,category}
+
+  };
+
+  
+  // Começa o jogo
+  const startGame = () => {
+    // Escolher palavra e categoria.
+    const {word,category} = pickWordAndCategory();
+
+    
+
+    // Criar Array de letras 
+    let wordLetters = word.split("");
+    wordLetters = wordLetters.map((l) => l.toLowerCase());
+    console.log(word,category);
+    console.log(wordLetters)
+
+    // Settar os states
+    setPickedWord(word);
+    setPickedtCategory(category);
+    setLetters(letters);
+    setGameStage(stages[1].name);
+  };
+
+  // Processar o input de letras
+  const verifyLetter = () => {
+    setGameStage(stages[2].name)
+  }
+
+  // Restart jogo
+  const retry = () => {
+    setGameStage(stages[0].name)
+  }
   return (
     <div className="App">
-      {gameStage === 'start' && <StartScreen/>}
-      {gameStage === 'game' && <Game/>}
-      {gameStage === 'end' && <GameOver/>}
+      {gameStage === 'start' && <StartScreen startGame = {startGame}/>}
+      {gameStage === 'game' && <Game verifyLetter={verifyLetter}/>}
+      {gameStage === 'end' && <GameOver retry={retry}/>}
     </div>
   );
 }
