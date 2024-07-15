@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState , useRef } from "react";
 import "./Game.css";
 
 const Game = ({
@@ -12,7 +12,7 @@ const Game = ({
   score,
 }) => {
   const [letra, setLetra] = useState("");
-  const letterInputRef = useRef(null);
+  const letterInputRef = useRef (null)
   const handleSubmit = (e) => {
     e.preventDefault();
 
