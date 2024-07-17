@@ -2,7 +2,7 @@
 import "./App.css";
 
 // React
-import { useCallBack, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 // Componentes
 import StartScreen from "./components/StartScreen";
@@ -31,7 +31,7 @@ function App() {
   const [guesses, setGuessed] = useState(guessesQty);
   const [score, setScore] = useState(0);
 
-  const pickWordAndCategory = () => {
+  const pickWordAndCategory = useCallback(() => {
     // Escolher categoria aleatoriamente
     const categories = Object.keys(words);
     const category =
@@ -42,25 +42,25 @@ function App() {
       words[category][Math.floor(Math.random() * words[category].length)];
 
     return { word, category };
-  };
+  }, [words]);
 
   // Começa o jogo
-  const startGame = () => {
+  const startGame = useCallback(() => {
+    // Limpar todas palavras
+    clearLetterStates();
     // Escolher palavra e categoria.
     const { word, category } = pickWordAndCategory();
 
     // Criar Array de letras
     let wordLetters = word.split("");
     wordLetters = wordLetters.map((l) => l.toLowerCase());
-    console.log(word, category);
-    console.log(wordLetters);
 
     // Settar os states
     setPickedWord(word);
     setPickedtCategory(category);
     setLetters(wordLetters);
     setGameStage(stages[1].name);
-  };
+  }, [pickWordAndCategory]);
 
   // Processar o input de letras
   const verifyLetter = (l) => {
@@ -93,6 +93,8 @@ function App() {
     setGuessedLetters([]);
     setWrongLetters([]);
   };
+
+  // Verificar se as chances terminaram
   useEffect(() => {
     if (guesses <= 0) {
       // reset all states
@@ -100,6 +102,20 @@ function App() {
       setGameStage(stages[2].name);
     }
   }, [guesses]);
+
+  // Verificar condição de vitoria
+  useEffect(() => {
+    const uniqueLetters = [...new Set(letter)];
+
+    // Condição de vitoria
+    if (guessedLetters.length === uniqueLetters.length) {
+      // Adicionar pontuação
+      setScore((actualScore) => (actualScore += 100));
+
+      // Reiniciar o jogo com nova palavra
+      startGame();
+    }
+  }, [guessedLetters, letter, startGame]);
 
   // Restart jogo
   const retry = () => {
